@@ -6,7 +6,7 @@ This applies to **Cloze Deletion** cards with the **Type In The Answer** feature
 
 **The fix:** This script reads a `Show Input` field and only shows the input for the cloze ordinals listed there. All other clozes render normally, without the input. If `Show Input` is empty, the script does nothing and Anki behaves as usual.
 
-![Demo](docs/ezgif-191049194996f391.gif)
+![Demo](docs/selective-cloze-input.gif)
 
 ## Setup
 
