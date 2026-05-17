@@ -66,6 +66,6 @@ In the `Show Input` field on your notes, enter a comma-delimited list of cloze o
 
 ## Notes
 
-- On the front, `#typeans` is the text input. On the back, it is a `div` showing the comparison between your typed answer and the correct one. The same script handles both.
+- On the front, `#typeans` is the text input. On the back, it is a non-input element showing the comparison between your typed answer and the correct one. The same script handles both.
 - The `{{Show Input}}` placeholder is substituted by Anki at render time, so no extra HTML is needed to read the field value.
 - If a card has multiple active clozes visible at once, the script reads the ordinal of the first one in DOM order.
