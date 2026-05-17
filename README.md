@@ -2,8 +2,6 @@
 
 A collection of scripts that extend Anki's built-in functionality for more focused, efficient flashcard review.
 
-Scripts are written in vanilla JavaScript and live in card templates. No add-ons required.
-
 ## Scripts
 
 | Script | Description |
