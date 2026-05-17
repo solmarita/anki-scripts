@@ -2,7 +2,7 @@
 
 This applies to **Cloze Deletion** cards with the **Type In The Answer** feature. If you don't have that note type set up yet, watch [this video](https://youtu.be/5tYObQ3ocrw) (skip to 3:22). It's best to create a new note type based on the standard Cloze rather than modifying it directly, so you keep both. Here's [how to create a new note type](https://youtu.be/4wODYPaayeM).
 
-**The problem:** With type-in-the-answer cloze cards, Anki shows an input for every cloze. You can ignore the ones you don't want to type, but seeing them clutters the card — especially when you have a lot of them.
+**The problem:** With type-in-the-answer cloze cards, Anki shows an input for every cloze. You can ignore the ones you don't want to type, but seeing them clutters the card, especially when you have a lot of them.
 
 **The fix:** This script reads a `Show Input` field and only shows the input for the cloze ordinals listed there. All other clozes render normally, without the input. If `Show Input` is empty, the script does nothing and Anki behaves as usual.
 
