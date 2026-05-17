@@ -91,7 +91,7 @@ Mac modifier keys map to the script's output as follows:
 
 ## Script
 
-Paste this into the **Front Template** only, at the bottom.
+Paste this into the **Front Template** only, at the bottom wrapped in `<script> ... </script>` tags.
 
 ```javascript
 (function () {
