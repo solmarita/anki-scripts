@@ -40,9 +40,14 @@ Set the `Hotkey` field value depending on your platform:
 
 | Value | Effect |
 |---|---|
-| `true` | Enables hotkey capture with standard labels (`Ctrl`, `Alt`, `Shift`, `Meta`) |
-| `true, mac` | Enables hotkey capture with Mac labels (`Ctrl`, `Opt`, `Shift`, `Cmd`) |
+| `true` | Enables for all clozes with standard labels (`Ctrl`, `Alt`, `Shift`, `Meta`) |
+| `true, mac` | Enables for all clozes with Mac labels (`Ctrl`, `Opt`, `Shift`, `Cmd`) |
+| `1` | Enables only for cloze 1, standard labels |
+| `1, mac` | Enables only for cloze 1, Mac labels |
+| `1, 2` | Enables for clozes 1 and 2 |
 | *(empty)* | Disabled, input behaves normally |
+
+Tokens are order-independent. When both ordinals and `true` are present, ordinals take precedence.
 
 ## Platform Support
 
@@ -97,10 +102,17 @@ Paste this into the **Front Template** only, at the bottom wrapped in `<script> 
 (function () {
     function parseHotkeyField(fieldValue) {
         const parts = fieldValue.split(",").map(s => s.trim().toLowerCase());
+        const ordinals = parts.filter(p => /^\d+$/.test(p)).map(Number);
         return {
-            enabled: parts.includes("true"),
-            mac: parts.includes("mac")
+            enabled: parts.includes("true") || ordinals.length > 0,
+            mac: parts.includes("mac"),
+            ordinals: ordinals.length > 0 ? new Set(ordinals) : null
         };
+    }
+
+    function getActiveOrdinal() {
+        const active = document.querySelector(".cloze[data-ordinal]");
+        return active ? Number(active.getAttribute("data-ordinal")) : null;
     }
 
     function formatHotkey(event, mac) {
@@ -128,8 +140,13 @@ Paste this into the **Front Template** only, at the bottom wrapped in `<script> 
         const input = document.getElementById("typeans");
         if (!input || input.tagName !== "INPUT") return;
 
-        const { enabled, mac } = parseHotkeyField("{{Hotkey}}");
+        const { enabled, mac, ordinals } = parseHotkeyField("{{Hotkey}}");
         if (!enabled) return;
+
+        if (ordinals !== null) {
+            const activeOrdinal = getActiveOrdinal();
+            if (activeOrdinal === null || !ordinals.has(activeOrdinal)) return;
+        }
 
         input.addEventListener("keydown", function (event) {
             const hotkey = formatHotkey(event, mac);
