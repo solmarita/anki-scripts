@@ -81,8 +81,9 @@ Mac modifier keys map to the script's output as follows:
 
 - Only key **combinations** are captured (at least one modifier key must be held).
 - Pressing a modifier key alone (`Ctrl`, `Alt`, `Shift`, `Meta`) does nothing.
-- `Ctrl+Enter` is excluded, as that is Anki's submit hotkey.
+- `Ctrl+Enter` is captured like any other combination. You can still submit with plain `Enter`.
 - Regular keypresses with no modifier pass through normally, so the input can still be used for typing if needed.
+- **Native Qt shortcuts** (e.g. `Ctrl+Q` to quit Anki) cannot be captured or blocked — Qt consumes them before JavaScript sees the keydown event.
 
 **Examples:**
 
@@ -93,6 +94,7 @@ Mac modifier keys map to the script's output as follows:
 | `Cmd/Meta` + `S` | `Meta+S` | `Cmd+S` |
 | `Ctrl` + `Alt` + `T` | `Ctrl+Alt+T` | `Ctrl+Opt+T` |
 | `Shift` first, then `Ctrl+D` | `Ctrl+Shift+D` | `Ctrl+Shift+D` |
+| `Ctrl` + `Enter` | `Ctrl+Enter` | `Ctrl+Enter` |
 
 ## Script
 
@@ -126,13 +128,10 @@ Paste this into the **Front Template** only, at the bottom wrapped in `<script> 
         // Ignore modifier-only keypresses
         if (["Control", "Alt", "Shift", "Meta"].includes(event.key)) return null;
 
-        // Exclude Ctrl+Enter (Anki submit)
-        if (event.ctrlKey && event.key === "Enter") return null;
-
         // At least one modifier must be held
         if (modifiers.length === 0) return null;
 
-        const key = event.key.toUpperCase();
+        const key = event.key.length === 1 ? event.key.toUpperCase() : event.key;
         return [...modifiers, key].join("+");
     }
 
@@ -153,8 +152,9 @@ Paste this into the **Front Template** only, at the bottom wrapped in `<script> 
             if (hotkey === null) return;
 
             event.preventDefault();
+            event.stopPropagation();
             input.value = hotkey;
-        });
+        }, true);
     }
 
     applyHotkeyCapture();
@@ -163,6 +163,6 @@ Paste this into the **Front Template** only, at the bottom wrapped in `<script> 
 
 ## Notes
 
-- `event.preventDefault()` prevents the browser from acting on the combination. For example, without it, pressing `Ctrl+D` in some browsers would trigger a bookmark action instead of being captured.
+- `event.preventDefault()` prevents the browser/webview from acting on the combination (e.g. without it, `Ctrl+D` might bookmark the page). `event.stopPropagation()` prevents the event from reaching Anki's own handlers on parent elements, which is what blocks `Ctrl+Enter` from submitting the card. The listener is registered in capture phase (`true` as the third argument) so it fires before any of Anki's bubble-phase handlers, including those on `#typeans` itself.
 - The check `input.tagName !== "INPUT"` is what makes the script front-only safe. On the back, Anki replaces the input with a non-input element carrying the same `#typeans` ID, and the script exits early when it detects that.
-- `event.key` returns the key name as defined by the browser. For letter keys this is always a single character, which `.toUpperCase()` handles cleanly.
+- `event.key` returns the key name as defined by the browser. Single-character keys (letters, digits, symbols) are uppercased. Named keys (`Enter`, `Tab`, `Escape`, `F1`, `ArrowUp`, etc.) are kept as-is.
